@@ -125,6 +125,8 @@ main {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-height: 260px;
+  justify-content: space-between;
 }
 
 .card:hover { border-color: #3f4a6e; }
@@ -219,7 +221,7 @@ main {
 }
 
 .card-source {
-  margin-top: 6px;
+  margin-top: auto;
   font-size: 0.74rem;
   color: var(--text-muted);
 }
