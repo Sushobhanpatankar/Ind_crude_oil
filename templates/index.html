@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Indian Crude Oil Cost Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <div class="header-title">
+        <span class="flag">🛢️</span>
+        <div>
+          <h1>Indian Crude Oil Cost Dashboard</h1>
+          <p class="subtitle">Real-time cost of one barrel of Indian crude in Indian Rupees</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <span id="status-text" class="status-text">Loading…</span>
+        <button id="refresh-btn" class="refresh-btn" title="Force refresh data">
+          ↻ Refresh Now
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main cards -->
+  <main>
+    <div class="cards">
+
+      <!-- Card 1: Crude Price -->
+      <div class="card" id="card-crude">
+        <div class="card-header">
+          <span class="card-icon">🛢️</span>
+          <div>
+            <div class="card-label">Indian Crude Basket</div>
+            <div class="card-sub">USD per barrel</div>
+          </div>
+          <span class="agent-badge">Agent 1</span>
+        </div>
+        <div class="card-value" id="crude-price">—</div>
+        <div class="card-detail" id="crude-month"></div>
+        <div class="card-detail today-tag hidden" id="crude-today-wrap">
+          Today's spot: <strong id="crude-today"></strong>
+        </div>
+        <div class="card-source">
+          Source: <a href="https://ppac.gov.in/prices/international-prices-of-crude-oil"
+                     target="_blank" rel="noopener">PPAC (MoPNG)</a>
+        </div>
+        <div class="card-error hidden" id="crude-error"></div>
+      </div>
+
+      <!-- Card 2: FX Rate -->
+      <div class="card" id="card-fx">
+        <div class="card-header">
+          <span class="card-icon">💱</span>
+          <div>
+            <div class="card-label">USD / INR Rate</div>
+            <div class="card-sub">INR per 1 US Dollar</div>
+          </div>
+          <span class="agent-badge">Agent 2</span>
+        </div>
+        <div class="card-value" id="fx-rate">—</div>
+        <div class="card-detail" id="fx-asof"></div>
+        <div class="card-source">
+          Source: <a href="https://www.rbi.org.in/" target="_blank" rel="noopener">RBI / FBIL</a>
+        </div>
+        <div class="card-error hidden" id="fx-error"></div>
+      </div>
+
+      <!-- Card 3: Result -->
+      <div class="card card-result" id="card-result">
+        <div class="card-header">
+          <span class="card-icon">🇮🇳</span>
+          <div>
+            <div class="card-label">Cost per Barrel in INR</div>
+            <div class="card-sub">Indian Rupees at Indian shores</div>
+          </div>
+          <span class="agent-badge agent-badge-result">Agent 3</span>
+        </div>
+        <div class="card-value result-value" id="inr-result">—</div>
+        <div class='card-detail' id='litre-result-wrap'>
+          Per litre: <strong id='inr-per-litre'>—</strong>
+        </div>
+        <div class="card-detail formula" id="formula"></div>
+        <div class="card-error hidden" id="result-error"></div>
+      </div>
+
+    </div>
+
+    <!-- Data freshness bar -->
+    <div class="info-bar">
+      <span id="last-updated"></span>
+      <span class="sep">·</span>
+      <span>Data auto-refreshes every hour</span>
+      <span class="sep">·</span>
+      <span>PPAC updates monthly · RBI rate updates daily ~1:30 PM IST</span>
+    </div>
+  </main>
+
+  <!-- Loading overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Fetching live data from official sources…</div>
+  </div>
+
+  <script>
+    const AUTO_REFRESH_MS = 60 * 60 * 1000; // 1 hour
+
+    // -----------------------------------------------------------------------
+    // Helpers
+    // -----------------------------------------------------------------------
+    function show(id) { document.getElementById(id).classList.remove("hidden"); }
+    function hide(id) { document.getElementById(id).classList.add("hidden"); }
+    function setText(id, text) { document.getElementById(id).textContent = text; }
+
+    function formatINR(num) {
+      return "₹" + Number(num).toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function formatUSD(num) {
+      return "$" + Number(num).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    // -----------------------------------------------------------------------
+    // Render
+    // -----------------------------------------------------------------------
+    function renderCards(data) {
+      const crude = data.crude || {};
+      const fx    = data.fx    || {};
+      const res   = data.result || {};
+
+      // --- Card 1: Crude ---
+      if (crude.price_usd != null) {
+        setText("crude-price", formatUSD(crude.price_usd) + " / bbl");
+        const monthLabel = (crude.month || "") + (crude.stale ? " ⚠ (prev. FY)" : " avg.");
+        setText("crude-month", monthLabel);
+        if (crude.today_price_usd != null) {
+          setText("crude-today", formatUSD(crude.today_price_usd) + " / bbl");
+          show("crude-today-wrap");
+        } else {
+          hide("crude-today-wrap");
+        }
+        document.getElementById("card-crude").classList.remove("card-error-state");
+        hide("crude-error");
+      } else {
+        setText("crude-price", "Unavailable");
+        setText("crude-error", crude.error || "Data not available");
+        show("crude-error");
+        document.getElementById("card-crude").classList.add("card-error-state");
+      }
+
+      // --- Card 2: FX ---
+      if (fx.rate != null) {
+        setText("fx-rate", "₹" + Number(fx.rate).toFixed(4) + " / $1");
+        setText("fx-asof", fx.as_of ? "As of: " + fx.as_of : "");
+        document.getElementById("card-fx").classList.remove("card-error-state");
+        hide("fx-error");
+      } else {
+        setText("fx-rate", "Unavailable");
+        setText("fx-error", fx.error || "Data not available");
+        show("fx-error");
+        document.getElementById("card-fx").classList.add("card-error-state");
+      }
+
+      // --- Card 3: Result ---
+      if (res.price_inr != null) {
+        setText("inr-result", formatINR(res.price_inr) + " / bbl");
+        setText("formula", res.formula || "");
+        if (res.price_inr_per_litre != null) {
+          document.getElementById('inr-per-litre').textContent = formatINR(res.price_inr_per_litre) + ' / L';
+        }
+        document.getElementById("card-result").classList.remove("card-error-state");
+        hide("result-error");
+      } else {
+        setText("inr-result", "Cannot Calculate");
+        setText("formula", "");
+        setText("result-error", res.error || "Upstream data missing");
+        show("result-error");
+        document.getElementById("card-result").classList.add("card-error-state");
+      }
+
+      // --- Status bar ---
+      if (data.fetched_at) {
+        const d = new Date(data.fetched_at);
+        const opts = { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" };
+        setText("last-updated", "Last fetched: " + d.toLocaleString("en-IN", opts) + " IST");
+      }
+      if (data.cache_age_seconds != null) {
+        const age = data.cache_age_seconds;
+        const mins = Math.floor(age / 60);
+        const secs = age % 60;
+        const ageStr = mins > 0 ? `${mins}m ${secs}s ago` : `${secs}s ago`;
+        const current = document.getElementById("last-updated").textContent;
+        setText("last-updated", current + " (" + ageStr + ")");
+      }
+    }
+
+    // -----------------------------------------------------------------------
+    // Fetch
+    // -----------------------------------------------------------------------
+    async function fetchData() {
+      setText("status-text", "Fetching…");
+      document.getElementById("refresh-btn").disabled = true;
+      show("loading-overlay");
+
+      try {
+        const res = await fetch("/api/data");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        renderCards(data);
+        setText("status-text", "Live");
+        document.getElementById("status-text").className = "status-text status-ok";
+      } catch (e) {
+        setText("status-text", "Error: " + e.message);
+        document.getElementById("status-text").className = "status-text status-err";
+      } finally {
+        hide("loading-overlay");
+        document.getElementById("refresh-btn").disabled = false;
+      }
+    }
+
+    // -----------------------------------------------------------------------
+    // Events
+    // -----------------------------------------------------------------------
+    document.getElementById("refresh-btn").addEventListener("click", async () => {
+      try {
+        await fetch("/api/refresh", { method: "POST" });
+      } catch (_) {}
+      fetchData();
+    });
+
+    // Initial load + auto-refresh
+    fetchData();
+    setInterval(fetchData, AUTO_REFRESH_MS);
+  </script>
+</body>
+</html>
