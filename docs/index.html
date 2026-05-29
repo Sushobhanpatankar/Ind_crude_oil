@@ -23,7 +23,7 @@
     .update-badge { font-size: 0.78rem; color: var(--text-muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; }
     main { max-width: 1100px; margin: 40px auto; padding: 0 24px; }
     .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; margin-bottom: 24px; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 26px 22px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 6px; min-height: 260px; justify-content: space-between; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 26px 22px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 6px; }
     .card-result { border-color: #10b98144; background: linear-gradient(145deg, #1a1d27 0%, #0f1f1a 100%); }
     .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
     .card-icon { font-size: 1.6rem; }
@@ -36,7 +36,7 @@
     .card-detail { font-size: 0.8rem; color: var(--text-muted); }
     .litre-line { font-size: 0.88rem; color: #a7f3d0; margin-top: 2px; }
     .formula { font-family: "Cascadia Code", "Consolas", monospace; font-size: 0.76rem; color: #6b7aa0; background: var(--surface2); border-radius: 6px; padding: 6px 10px; margin-top: 4px; word-break: break-word; }
-    .card-source { margin-top: auto; font-size: 0.74rem; color: var(--text-muted); }
+    .card-source { margin-top: 6px; font-size: 0.74rem; color: var(--text-muted); }
     .card-error { background: #ef444418; border: 1px solid #ef444444; border-radius: 6px; padding: 6px 10px; font-size: 0.76rem; color: #f87171; margin-top: 4px; }
     .today-tag { font-size: 0.78rem; color: var(--accent); margin-top: 2px; }
     .info-bar { font-size: 0.78rem; color: var(--text-muted); text-align: center; padding: 12px 0 32px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; }
@@ -54,7 +54,7 @@
           <p class="subtitle">Real-time cost of Indian crude in Indian Rupees — per barrel &amp; per litre</p>
         </div>
       </div>
-      <div class="update-badge">Updated: 28 May 2026, 07:54 AM IST</div>
+      <div class="update-badge">Updated: 29 May 2026, 11:13 PM IST</div>
     </div>
   </header>
 
@@ -65,10 +65,11 @@
         <div class="card-header">
           <span class="card-icon">🛢️</span>
           <div><div class="card-label">Indian Crude Basket</div><div class="card-sub">USD per barrel</div></div>
+          <span class="agent-badge">Agent 1</span>
         </div>
-        <div class="card-value">$107.45</div>
+        <div class="card-value">$106.83</div>
         <div class="card-detail">May 2026 avg.</div>
-        <div class="today-tag">Today's spot: <strong>$102.05</strong></div>
+        <div class="today-tag">Today's spot: <strong>$97.52</strong></div>
         <div class="card-source">Source: <a href="https://ppac.gov.in/prices/international-prices-of-crude-oil" target="_blank" rel="noopener">PPAC (MoPNG)</a></div>
         
       </div>
@@ -77,8 +78,9 @@
         <div class="card-header">
           <span class="card-icon">💱</span>
           <div><div class="card-label">USD / INR Rate</div><div class="card-sub">INR per 1 US Dollar</div></div>
+          <span class="agent-badge">Agent 2</span>
         </div>
-        <div class="card-value">₹95.7883 / $1</div>
+        <div class="card-value">₹95.3845 / $1</div>
         <div class="card-detail"></div>
         <div class="card-source">Source: <a href="https://www.rbi.org.in/" target="_blank" rel="noopener">RBI / FBIL</a></div>
         
@@ -88,18 +90,19 @@
         <div class="card-header">
           <span class="card-icon">🇮🇳</span>
           <div><div class="card-label">Cost in INR</div><div class="card-sub">At Indian shores</div></div>
+          <span class="agent-badge agent-badge-result">Agent 3</span>
         </div>
-        <div class="card-value result-value">₹10,292.45 / bbl</div>
-        <div class="litre-line">Per litre: <strong>₹64.74 / L</strong></div>
-        <div class="formula">107.45 USD/bbl × 95.7883 INR/USD = ₹10,292.45/bbl</div>
-        <div class="formula">10,292.45 INR / 158.987 L = INR 64.7377/L</div>
+        <div class="card-value result-value">₹10,189.93 / bbl</div>
+        <div class="litre-line">Per litre: <strong>₹64.09 / L</strong></div>
+        <div class="formula">106.83 USD/bbl × 95.3845 INR/USD = ₹10,189.93/bbl</div>
+        <div class="formula">10,189.93 INR / 158.987 L = INR 64.0929/L</div>
         
       </div>
 
     </div>
 
     <div class="info-bar">
-      <span>Data fetched: 28 May 2026, 07:54 AM IST</span>
+      <span>Data fetched: 29 May 2026, 11:13 PM IST</span>
       <span class="sep">·</span>
       <span>Auto-updates every 6 hours via GitHub Actions</span>
       <span class="sep">·</span>
