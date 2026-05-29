@@ -43,20 +43,26 @@ def _parse_rate_from_homepage(html: str):
                     raw = dd.get_text(strip=True)
                     # strip leading colon/space e.g. ": 95.7883"
                     raw = raw.lstrip(":").strip()
-                    rate = float(raw)
-                    if RATE_MIN <= rate <= RATE_MAX:
-                        # Try to find the as_of date nearby
-                        as_of = _extract_as_of(soup)
-                        return rate, as_of
+                    try:
+                        rate = float(raw)
+                        if RATE_MIN <= rate <= RATE_MAX:
+                            # Try to find the as_of date nearby
+                            as_of = _extract_as_of(soup)
+                            return rate, as_of
+                    except ValueError:
+                        pass
 
         # Strategy 2: regex fallback on raw HTML
         pattern = r'(?:INR\s*/\s*1\s*USD|USD)[^\d]*?([\d]{2,3}\.[\d]{2,6})'
         match = re.search(pattern, html)
         if match:
-            rate = float(match.group(1))
-            if RATE_MIN <= rate <= RATE_MAX:
-                as_of = _extract_as_of(soup)
-                return rate, as_of
+            try:
+                rate = float(match.group(1))
+                if RATE_MIN <= rate <= RATE_MAX:
+                    as_of = _extract_as_of(soup)
+                    return rate, as_of
+            except ValueError:
+                pass
 
     except Exception:
         pass
@@ -67,10 +73,11 @@ def _extract_as_of(soup) -> str:
     """Try to extract the date the rate is effective from the page."""
     try:
         # Look for text near "FBIL" or "Reference Rate"
-        for tag in soup.find_all(string=re.compile(r'\d{2}[-/]\w{3}[-/]\d{4}|\d{2}/\d{2}/\d{4}')):
-            text = tag.strip()
-            if text:
-                return text
+        pattern = re.compile(r'(\d{2}[-/]\w{3}[-/]\d{4}|\d{2}/\d{2}/\d{4})')
+        for tag in soup.find_all(string=pattern):
+            match = pattern.search(tag)
+            if match:
+                return match.group(1)
     except Exception:
         pass
     return ""
@@ -79,11 +86,12 @@ def _extract_as_of(soup) -> str:
 def _fetch_from_archive() -> tuple:
     """
     Fallback: scrape the RBI Reference Rate Archive for today's USD/INR rate.
+    Looks back up to 5 days for the most recent rate.
     Returns (rate: float, as_of: str) or (None, None).
     """
     try:
         from bs4 import BeautifulSoup
-        from datetime import date
+        from datetime import date, timedelta
 
         # First GET to get ASP.NET form state
         resp = requests.get(RBI_ARCHIVE_URL, headers=HEADERS, timeout=(10, 30))
@@ -97,42 +105,44 @@ def _fetch_from_archive() -> tuple:
         eventval = soup.find("input", {"id": "__EVENTVALIDATION"})
         viewstategen = soup.find("input", {"id": "__VIEWSTATEGENERATOR"})
 
-        today = date.today()
-        date_str = today.strftime("%d/%m/%Y")
+        # Try today and then go backwards for up to 5 days
+        for i in range(6):
+            target_date = date.today() - timedelta(days=i)
+            date_str = target_date.strftime("%d/%m/%Y")
 
-        payload = {
-            "__VIEWSTATE": viewstate["value"] if viewstate else "",
-            "__EVENTVALIDATION": eventval["value"] if eventval else "",
-            "__VIEWSTATEGENERATOR": viewstategen["value"] if viewstategen else "",
-            "ctl00$ContentPlaceHolder1$txtDate": date_str,
-            "ctl00$ContentPlaceHolder1$btnSearch": "Search",
-        }
+            payload = {
+                "__VIEWSTATE": viewstate["value"] if viewstate else "",
+                "__EVENTVALIDATION": eventval["value"] if eventval else "",
+                "__VIEWSTATEGENERATOR": viewstategen["value"] if viewstategen else "",
+                "ctl00$ContentPlaceHolder1$txtDate": date_str,
+                "ctl00$ContentPlaceHolder1$btnSearch": "Search",
+            }
 
-        resp2 = requests.post(RBI_ARCHIVE_URL, data=payload, headers={
-            **HEADERS,
-            "Referer": RBI_ARCHIVE_URL,
-            "Content-Type": "application/x-www-form-urlencoded",
-        }, timeout=(10, 30))
-        resp2.raise_for_status()
+            resp2 = requests.post(RBI_ARCHIVE_URL, data=payload, headers={
+                **HEADERS,
+                "Referer": RBI_ARCHIVE_URL,
+                "Content-Type": "application/x-www-form-urlencoded",
+            }, timeout=(10, 30))
+            resp2.raise_for_status()
 
-        try:
-            soup2 = BeautifulSoup(resp2.text, "lxml")
-        except Exception:
-            soup2 = BeautifulSoup(resp2.text, "html.parser")
+            try:
+                soup2 = BeautifulSoup(resp2.text, "lxml")
+            except Exception:
+                soup2 = BeautifulSoup(resp2.text, "html.parser")
 
-        # Table has columns: Date | USD | GBP | EUR | JPY (per 100)
-        for row in soup2.find_all("tr"):
-            cells = row.find_all("td")
-            if len(cells) >= 2:
-                # First cell is date, second is USD rate
-                rate_text = cells[1].get_text(strip=True)
-                try:
-                    rate = float(rate_text)
-                    if RATE_MIN <= rate <= RATE_MAX:
-                        as_of = cells[0].get_text(strip=True)
-                        return rate, as_of
-                except ValueError:
-                    continue
+            # Table has columns: Date | USD | GBP | EUR | JPY (per 100)
+            for row in soup2.find_all("tr"):
+                cells = row.find_all("td")
+                if len(cells) >= 2:
+                    # First cell is date, second is USD rate
+                    rate_text = cells[1].get_text(strip=True)
+                    try:
+                        rate = float(rate_text)
+                        if RATE_MIN <= rate <= RATE_MAX:
+                            as_of = cells[0].get_text(strip=True)
+                            return rate, as_of
+                    except ValueError:
+                        continue
 
     except Exception:
         pass
