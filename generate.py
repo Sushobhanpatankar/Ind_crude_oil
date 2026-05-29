@@ -242,7 +242,10 @@ def build_html(data: dict, generated_at: str, history: list) -> str:
           <p class="subtitle">Real-time cost of Indian crude in Indian Rupees — per barrel &amp; per litre</p>
         </div>
       </div>
-      <div class="update-badge">Updated: {generated_at} IST</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <a style="font-size:0.78rem;color:#3b82f6;background:#22263a;border:1px solid #2e3352;border-radius:20px;padding:5px 12px;text-decoration:none;" href="fuel.html">⛽ Fuel Retail Prices</a>
+        <div class="update-badge">Updated: {generated_at} IST</div>
+      </div>
     </div>
   </header>
 

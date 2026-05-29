@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>India Fuel Retail Prices</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a;
+      --border: #2e3352; --accent: #f59e0b; --accent2: #3b82f6;
+      --accent3: #10b981; --text: #e2e8f0; --text-muted: #8892a4;
+      --red: #ef4444; --radius: 14px; --shadow: 0 4px 24px rgba(0,0,0,.45);
+    }
+    body { font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    a { color: var(--accent2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 18px 32px; }
+    .header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .header-title { display: flex; align-items: center; gap: 14px; }
+    .flag { font-size: 2.2rem; }
+    h1 { font-size: 1.35rem; font-weight: 700; }
+    .subtitle { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+    .header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .update-badge { font-size: 0.78rem; color: var(--text-muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; }
+    .nav-link { font-size: 0.78rem; color: var(--accent2); background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; }
+    main { max-width: 1100px; margin: 40px auto; padding: 0 24px 48px; }
+    .error-bar { background: #ef444418; border: 1px solid #ef444444; border-radius: 8px; padding: 10px 16px; font-size: 0.82rem; color: #f87171; margin-bottom: 20px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 24px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 26px 22px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; min-height: 220px; justify-content: space-between; }
+    .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .card-icon { font-size: 1.6rem; }
+    .card-label { font-size: 1rem; font-weight: 700; }
+    .card-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 1px; }
+    .fuel-row { display: flex; align-items: center; gap: 0; flex: 1; }
+    .fuel-item { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .fuel-item:last-child { text-align: right; }
+    .fuel-divider { width: 1px; background: var(--border); align-self: stretch; margin: 0 16px; }
+    .fuel-tag { font-size: 0.78rem; font-weight: 600; letter-spacing: .3px; }
+    .fuel-price { font-size: 1.9rem; font-weight: 800; letter-spacing: -.5px; line-height: 1.1; }
+    .fuel-unit { font-size: 0.85rem; font-weight: 500; opacity: .75; margin-left: 2px; }
+    .card-source { font-size: 0.74rem; color: var(--text-muted); }
+    .info-bar { font-size: 0.78rem; color: var(--text-muted); text-align: center; padding: 12px 0 36px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; }
+    .sep { opacity: .4; }
+    /* Chart */
+    .chart-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 24px 24px; box-shadow: var(--shadow); margin-bottom: 32px; }
+    .chart-header { margin-bottom: 20px; }
+    .chart-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .chart-sub { font-size: 0.78rem; font-weight: 400; color: var(--text-muted); margin-left: 6px; }
+    .chart-wrap { position: relative; height: 300px; }
+    .chart-empty { text-align: center; padding: 40px 24px; }
+    .chart-empty-msg { color: var(--text-muted); font-size: 0.88rem; margin-top: 12px; }
+    @media (max-width: 600px) { header { padding: 14px 16px; } main { padding: 0 14px 32px; margin-top: 24px; } .fuel-price { font-size: 1.5rem; } .chart-wrap { height: 220px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="header-title">
+        <span class="flag">⛽</span>
+        <div>
+          <h1>India Fuel Retail Prices</h1>
+          <p class="subtitle">Petrol &amp; Diesel — Delhi · Mumbai · Pune</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <a class="nav-link" href="index.html">🛢️ Crude Oil Dashboard</a>
+        <div class="update-badge">Updated: 30 May 2026, 12:20 AM IST</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+    <div class="cards">
+      
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🏛️</span>
+          <div><div class="card-label">Delhi</div><div class="card-sub">Retail selling price</div></div>
+        </div>
+        <div class="fuel-row">
+          <div class="fuel-item">
+            <div class="fuel-tag" style="color:#f59e0b">⛽ Petrol</div>
+            <div class="fuel-price" style="color:#f59e0b">₹102.12<span class="fuel-unit">/L</span></div>
+          </div>
+          <div class="fuel-divider"></div>
+          <div class="fuel-item">
+            <div class="fuel-tag" style="color:#fb923c">🚌 Diesel</div>
+            <div class="fuel-price" style="color:#fb923c">₹95.20<span class="fuel-unit">/L</span></div>
+          </div>
+        </div>
+        <div class="card-source">Source: <a href="https://ppac.gov.in/uploads/page-images/1780035559_PP_9_a_DailyPriceMSHSD_Metro_29.05.2026.pdf" target="_blank" rel="noopener">PPAC (MoPNG)</a></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🌊</span>
+          <div><div class="card-label">Mumbai</div><div class="card-sub">Retail selling price</div></div>
+        </div>
+        <div class="fuel-row">
+          <div class="fuel-item">
+            <div class="fuel-tag" style="color:#3b82f6">⛽ Petrol</div>
+            <div class="fuel-price" style="color:#3b82f6">₹111.21<span class="fuel-unit">/L</span></div>
+          </div>
+          <div class="fuel-divider"></div>
+          <div class="fuel-item">
+            <div class="fuel-tag" style="color:#60a5fa">🚌 Diesel</div>
+            <div class="fuel-price" style="color:#60a5fa">₹97.83<span class="fuel-unit">/L</span></div>
+          </div>
+        </div>
+        <div class="card-source">Source: <a href="https://ppac.gov.in/uploads/page-images/1780035559_PP_9_a_DailyPriceMSHSD_Metro_29.05.2026.pdf" target="_blank" rel="noopener">PPAC (MoPNG)</a></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🌴</span>
+          <div><div class="card-label">Chennai</div><div class="card-sub">Retail selling price</div></div>
+        </div>
+        <div class="fuel-row">
+          <div class="fuel-item">
+            <div class="fuel-tag" style="color:#10b981">⛽ Petrol</div>
+            <div class="fuel-price" style="color:#10b981">₹107.77<span class="fuel-unit">/L</span></div>
+          </div>
+          <div class="fuel-divider"></div>
+          <div class="fuel-item">
+            <div class="fuel-tag" style="color:#34d399">🚌 Diesel</div>
+            <div class="fuel-price" style="color:#34d399">₹99.55<span class="fuel-unit">/L</span></div>
+          </div>
+        </div>
+        <div class="card-source">Source: <a href="https://ppac.gov.in/uploads/page-images/1780035559_PP_9_a_DailyPriceMSHSD_Metro_29.05.2026.pdf" target="_blank" rel="noopener">PPAC (MoPNG)</a></div>
+      </div>
+    </div>
+
+    <div class="info-bar">
+      <span>Effective from: <strong>29.05.2026</strong></span><span class="sep">·</span>
+      <span>Updated: 30 May 2026, 12:20 AM IST</span>
+      <span class="sep">·</span>
+      <span>Auto-updates daily at 07:00 IST via GitHub Actions</span>
+      <span class="sep">·</span>
+      <span>Source: <a href="https://ppac.gov.in/uploads/page-images/1780035559_PP_9_a_DailyPriceMSHSD_Metro_29.05.2026.pdf" target="_blank" rel="noopener">PPAC (MoPNG)</a></span>
+    </div>
+
+    
+  <section class="chart-section chart-empty">
+    <h2 class="chart-title">Petrol Price Trend <span class="chart-sub">(daily)</span></h2>
+    <p class="chart-empty-msg">Building history — check back tomorrow after the next update.</p>
+  </section>
+
+  </main>
+<script>const HISTORY = [{"ts_utc": "2026-05-29T18:50:32Z", "ts_ist": "30 May", "Delhi": {"petrol": 102.12, "diesel": 95.2}, "Mumbai": {"petrol": 111.21, "diesel": 97.83}, "Chennai": {"petrol": 107.77, "diesel": 99.55}}];</script>
+</body>
+</html>
