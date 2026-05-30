@@ -65,7 +65,7 @@
       </div>
       <div class="header-right">
         <a class="nav-link" href="index.html">🛢️ Crude Oil Dashboard</a>
-        <div class="update-badge">Updated: 30 May 2026, 12:20 AM IST</div>
+        <div class="update-badge">Updated: 30 May 2026, 10:41 AM IST</div>
       </div>
     </div>
   </header>
@@ -132,7 +132,7 @@
 
     <div class="info-bar">
       <span>Effective from: <strong>29.05.2026</strong></span><span class="sep">·</span>
-      <span>Updated: 30 May 2026, 12:20 AM IST</span>
+      <span>Updated: 30 May 2026, 10:41 AM IST</span>
       <span class="sep">·</span>
       <span>Auto-updates daily at 07:00 IST via GitHub Actions</span>
       <span class="sep">·</span>
@@ -140,12 +140,98 @@
     </div>
 
     
-  <section class="chart-section chart-empty">
-    <h2 class="chart-title">Petrol Price Trend <span class="chart-sub">(daily)</span></h2>
-    <p class="chart-empty-msg">Building history — check back tomorrow after the next update.</p>
+  <section class="chart-section">
+    <div class="chart-header">
+      <h2 class="chart-title">Petrol Price Trend <span class="chart-sub">(daily, 07:00 IST)</span></h2>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="fuelChart"></canvas>
+    </div>
   </section>
 
   </main>
-<script>const HISTORY = [{"ts_utc": "2026-05-29T18:50:32Z", "ts_ist": "30 May", "Delhi": {"petrol": 102.12, "diesel": 95.2}, "Mumbai": {"petrol": 111.21, "diesel": 97.83}, "Chennai": {"petrol": 107.77, "diesel": 99.55}}];</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script>
+    const HISTORY = [{"ts_utc": "2026-05-29T18:50:32Z", "ts_ist": "30 May", "Delhi": {"petrol": 102.12, "diesel": 95.2}, "Mumbai": {"petrol": 111.21, "diesel": 97.83}, "Chennai": {"petrol": 107.77, "diesel": 99.55}}, {"ts_utc": "2026-05-30T05:11:38Z", "ts_ist": "30 May", "Delhi": {"petrol": 102.12, "diesel": 95.2}, "Mumbai": {"petrol": 111.21, "diesel": 97.83}, "Chennai": {"petrol": 107.77, "diesel": 99.55}}];
+    const labels = HISTORY.map(d => d.ts_ist);
+
+    Chart.defaults.color = "#8892a4";
+    Chart.defaults.borderColor = "#2e3352";
+
+    new Chart(document.getElementById("fuelChart"), {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Delhi Petrol",
+            data: HISTORY.map(d => d["Delhi"] && d["Delhi"]["petrol"]),
+            borderColor: "#f59e0b",
+            backgroundColor: "#f59e0b18",
+            tension: 0.35,
+            fill: false,
+            pointRadius: HISTORY.length > 20 ? 2 : 4,
+            pointHoverRadius: 6,
+          },
+          {
+            label: "Mumbai Petrol",
+            data: HISTORY.map(d => d["Mumbai"] && d["Mumbai"]["petrol"]),
+            borderColor: "#3b82f6",
+            backgroundColor: "#3b82f618",
+            tension: 0.35,
+            fill: false,
+            pointRadius: HISTORY.length > 20 ? 2 : 4,
+            pointHoverRadius: 6,
+          },
+          {
+            label: "Chennai Petrol",
+            data: HISTORY.map(d => d["Chennai"] && d["Chennai"]["petrol"]),
+            borderColor: "#10b981",
+            backgroundColor: "#10b98118",
+            tension: 0.35,
+            fill: false,
+            pointRadius: HISTORY.length > 20 ? 2 : 4,
+            pointHoverRadius: 6,
+          },]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        interaction: { mode: "index", intersect: false },
+        scales: {
+          x: {
+            ticks: { color: "#8892a4", maxTicksLimit: 10, maxRotation: 30 },
+            grid: { color: "#2e335244" }
+          },
+          y: {
+            position: "left",
+            ticks: {
+              color: "#8892a4",
+              callback: v => "₹" + v.toFixed(2)
+            },
+            grid: { color: "#2e335244" },
+            title: { display: true, text: "₹ / litre", color: "#8892a4", font: { size: 11 } }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: "#e2e8f0", usePointStyle: true, padding: 20 }
+          },
+          tooltip: {
+            backgroundColor: "#1a1d27",
+            borderColor: "#2e3352",
+            borderWidth: 1,
+            titleColor: "#e2e8f0",
+            bodyColor: "#8892a4",
+            padding: 12,
+            callbacks: {
+              label: ctx => ctx.dataset.label + ": ₹" + ctx.parsed.y.toFixed(2) + "/L"
+            }
+          }
+        }
+      }
+    });
+  </script>
 </body>
 </html>
