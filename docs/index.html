@@ -95,7 +95,8 @@
       </div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <a style="font-size:0.78rem;color:#3b82f6;background:#22263a;border:1px solid #2e3352;border-radius:20px;padding:5px 12px;text-decoration:none;" href="fuel.html">⛽ Fuel Retail Prices</a>
-        <div class="update-badge">Updated: 31 May 2026, 06:47 PM IST</div>
+        <a style="font-size:0.78rem;color:#8892a4;background:#22263a;border:1px solid #2e3352;border-radius:20px;padding:5px 12px;text-decoration:none;" href="https://sushobhanpatankar.github.io/ship/" target="_blank" rel="noopener">🚢 Ship Tracker</a>
+        <div class="update-badge">Updated: 01 Jun 2026, 12:34 AM IST</div>
       </div>
     </div>
   </header>
@@ -121,7 +122,7 @@
           <div><div class="card-label">USD / INR Rate</div><div class="card-sub">INR per 1 US Dollar</div></div>
         </div>
         <div class="card-value">₹95.3845 / $1</div>
-        <div class="card-detail">As of: 05/31/2026</div>
+        <div class="card-detail">As of: 06/01/2026</div>
         <div class="card-source">Source: <a href="https://www.rbi.org.in/" target="_blank" rel="noopener">RBI / FBIL</a></div>
         
       </div>
@@ -141,7 +142,7 @@
     </div>
 
     <div class="info-bar">
-      <span>Data fetched: 31 May 2026, 06:47 PM IST</span>
+      <span>Data fetched: 01 Jun 2026, 12:34 AM IST</span>
       <span class="sep">·</span>
       <span>Auto-updates every 6 hours via GitHub Actions</span>
       <span class="sep">·</span>
@@ -149,12 +150,42 @@
     </div>
 
     
-  <section class="ship-section ship-offline">
+  <section class="ship-section">
     <div class="ship-header">
       <span class="ship-icon">&#128674;</span>
       <h2 class="ship-title">Crude Tanker Pipeline <span class="ship-sub">live vessel tracking</span></h2>
+      <span class="ship-asof">as of 01 Jun 2026, 12:13 AM IST</span>
     </div>
-    <p class="ship-offline-msg">Ship tracker data unavailable (database not found). Run the ship tracker locally to see live vessel counts.</p>
+    <div class="ship-stats">
+      <div class="ship-stat ship-stat-inbound">
+        <div class="ship-stat-num">8</div>
+        <div class="ship-stat-label">Berthed</div>
+      </div>
+      <div class="ship-stat ship-stat-port">
+        <div class="ship-stat-num">12</div>
+        <div class="ship-stat-label">At Indian Ports</div>
+      </div>
+      <div class="ship-stat ship-stat-outbound">
+        <div class="ship-stat-num">4</div>
+        <div class="ship-stat-label">Anchored</div>
+      </div>
+    </div>
+    <div class="ship-cargo-row">
+      <span class="ship-badge ship-crude">CRUDE &nbsp;8</span>
+      <span class="ship-badge ship-lng">LNG &nbsp;0</span>
+      <span class="ship-badge ship-cng">CNG &nbsp;0</span>
+      <span class="ship-badge ship-petro">PETROLEUM &nbsp;4</span>
+      <span class="ship-busiest">Busiest port: <strong>Mundra</strong></span>
+    </div>
+    <div class="ship-ports">
+      <table class="ship-table">
+        <thead><tr><th>Port</th><th>Vessels</th></tr></thead>
+        <tbody><tr><td>Mundra</td><td class="ship-td-num">7</td></tr>
+<tr><td>Paradip</td><td class="ship-td-num">4</td></tr>
+<tr><td>JNPT</td><td class="ship-td-num">1</td></tr>
+</tbody>
+      </table>
+    </div>
   </section>
 
     
@@ -171,7 +202,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <script>
-    const HISTORY = [{"ts_utc": "2026-05-29T18:20:45Z", "ts_ist": "29 May, 11:50 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-29T18:20:58Z", "ts_ist": "29 May, 11:50 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-29T18:50:50Z", "ts_ist": "30 May, 12:20 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-29T20:09:41Z", "ts_ist": "30 May, 01:39 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-30T02:11:49Z", "ts_ist": "30 May, 07:41 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-30T08:17:45Z", "ts_ist": "30 May, 01:47 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-30T13:06:04Z", "ts_ist": "30 May, 06:36 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T02:37:28Z", "ts_ist": "31 May, 08:07 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T08:35:20Z", "ts_ist": "31 May, 02:05 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T11:34:31Z", "ts_ist": "31 May, 05:04 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T12:26:21Z", "ts_ist": "31 May, 05:56 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T13:17:10Z", "ts_ist": "31 May, 06:47 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}];
+    const HISTORY = [{"ts_utc": "2026-05-29T18:20:45Z", "ts_ist": "29 May, 11:50 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-29T18:20:58Z", "ts_ist": "29 May, 11:50 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-29T18:50:50Z", "ts_ist": "30 May, 12:20 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-29T20:09:41Z", "ts_ist": "30 May, 01:39 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-30T02:11:49Z", "ts_ist": "30 May, 07:41 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-30T08:17:45Z", "ts_ist": "30 May, 01:47 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-30T13:06:04Z", "ts_ist": "30 May, 06:36 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T02:37:28Z", "ts_ist": "31 May, 08:07 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T08:35:20Z", "ts_ist": "31 May, 02:05 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T11:34:31Z", "ts_ist": "31 May, 05:04 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T12:26:21Z", "ts_ist": "31 May, 05:56 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T13:17:10Z", "ts_ist": "31 May, 06:47 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T19:04:05Z", "ts_ist": "01 Jun, 12:34 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}];
     const labels      = HISTORY.map(d => d.ts_ist);
     const barrelData  = HISTORY.map(d => d.price_inr);
     const litreData   = HISTORY.map(d => d.price_inr_per_litre);
