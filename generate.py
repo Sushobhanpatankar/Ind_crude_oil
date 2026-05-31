@@ -349,6 +349,7 @@ def build_html(data: dict, generated_at: str, history: list, ships: dict | None 
       </div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <a style="font-size:0.78rem;color:#3b82f6;background:#22263a;border:1px solid #2e3352;border-radius:20px;padding:5px 12px;text-decoration:none;" href="fuel.html">⛽ Fuel Retail Prices</a>
+        <a style="font-size:0.78rem;color:#8892a4;background:#22263a;border:1px solid #2e3352;border-radius:20px;padding:5px 12px;text-decoration:none;" href="https://sushobhanpatankar.github.io/ship/" target="_blank" rel="noopener">🚢 Ship Tracker</a>
         <div class="update-badge">Updated: {generated_at} IST</div>
       </div>
     </div>
