@@ -91,16 +91,23 @@ def get_ship_data() -> dict:
             "available": True,
             "stale": stale,
             "as_of": as_of,
-            "inbound_count":   row["total_inbound"],
-            "outbound_count":  row["total_outbound"],
             "in_port_count":   row["total_in_port"],
             "crude_count":     row["crude_count"],
             "lng_count":       row["lng_count"],
             "cng_count":       row["cng_count"],
             "petroleum_count": row["petroleum_count"],
             "busiest_port":    row["busiest_port"] or "—",
-            "arriving_next_24h": extra.get("arriving_next_24h", 0),
         }
+
+        # --- Berthed vs anchored counts from port_activity ---
+        cur.execute(
+            """SELECT activity, COUNT(*) AS cnt
+               FROM port_activity
+               GROUP BY activity"""
+        )
+        activity_rows = {r["activity"]: r["cnt"] for r in cur.fetchall()}
+        result["berthed_count"] = activity_rows.get("BERTHED", 0)
+        result["anchored_count"] = activity_rows.get("ANCHORED", 0)
 
         # --- Port activity breakdown ---
         cur.execute(

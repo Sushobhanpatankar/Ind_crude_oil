@@ -52,8 +52,8 @@ def build_ship_section(ships: dict) -> str:
     stale_badge = ' <span class="ship-stale-badge">stale</span>' if ships.get("stale") else ""
     as_of = ships.get("as_of", "")
 
-    inbound  = ships.get("inbound_count", 0)
-    outbound = ships.get("outbound_count", 0)
+    berthed  = ships.get("berthed_count", 0)
+    anchored = ships.get("anchored_count", 0)
     in_port  = ships.get("in_port_count", 0)
     crude    = ships.get("crude_count", 0)
     lng      = ships.get("lng_count", 0)
@@ -77,16 +77,16 @@ def build_ship_section(ships: dict) -> str:
     </div>
     <div class="ship-stats">
       <div class="ship-stat ship-stat-inbound">
-        <div class="ship-stat-num">{inbound}</div>
-        <div class="ship-stat-label">Inbound to India</div>
+        <div class="ship-stat-num">{berthed}</div>
+        <div class="ship-stat-label">Berthed</div>
       </div>
       <div class="ship-stat ship-stat-port">
         <div class="ship-stat-num">{in_port}</div>
         <div class="ship-stat-label">At Indian Ports</div>
       </div>
       <div class="ship-stat ship-stat-outbound">
-        <div class="ship-stat-num">{outbound}</div>
-        <div class="ship-stat-label">Outbound (ballast)</div>
+        <div class="ship-stat-num">{anchored}</div>
+        <div class="ship-stat-label">Anchored</div>
       </div>
     </div>
     <div class="ship-cargo-row">
