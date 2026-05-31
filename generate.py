@@ -10,6 +10,7 @@ import os
 from datetime import datetime, timedelta, timezone
 
 from agents import get_all_data
+from agents.ship_agent import get_ship_data
 
 HISTORY_FILE = "docs/data.json"
 MAX_HISTORY  = 120   # 30 days × 4 runs/day
@@ -35,7 +36,76 @@ def save_history(history: list):
 # HTML builder
 # ---------------------------------------------------------------------------
 
-def build_html(data: dict, generated_at: str, history: list) -> str:
+def build_ship_section(ships: dict) -> str:
+    """Build the HTML for the ship tracker section."""
+    if not ships.get("available"):
+        reason = ships.get("reason", "ship tracker offline")
+        return f"""
+  <section class="ship-section ship-offline">
+    <div class="ship-header">
+      <span class="ship-icon">&#128674;</span>
+      <h2 class="ship-title">Crude Tanker Pipeline <span class="ship-sub">live vessel tracking</span></h2>
+    </div>
+    <p class="ship-offline-msg">Ship tracker data unavailable ({reason}). Run the ship tracker locally to see live vessel counts.</p>
+  </section>"""
+
+    stale_badge = ' <span class="ship-stale-badge">stale</span>' if ships.get("stale") else ""
+    as_of = ships.get("as_of", "")
+
+    inbound  = ships.get("inbound_count", 0)
+    outbound = ships.get("outbound_count", 0)
+    in_port  = ships.get("in_port_count", 0)
+    crude    = ships.get("crude_count", 0)
+    lng      = ships.get("lng_count", 0)
+    cng      = ships.get("cng_count", 0)
+    petro    = ships.get("petroleum_count", 0)
+    busiest  = ships.get("busiest_port", "—")
+
+    # Port activity rows
+    port_rows = ""
+    for pa in ships.get("port_activity", []):
+        port_rows += f'<tr><td>{pa["port"]}</td><td class="ship-td-num">{pa["count"]}</td></tr>\n'
+    if not port_rows:
+        port_rows = '<tr><td colspan="2" style="color:var(--text-muted)">No port data yet</td></tr>'
+
+    return f"""
+  <section class="ship-section">
+    <div class="ship-header">
+      <span class="ship-icon">&#128674;</span>
+      <h2 class="ship-title">Crude Tanker Pipeline <span class="ship-sub">live vessel tracking</span>{stale_badge}</h2>
+      <span class="ship-asof">as of {as_of}</span>
+    </div>
+    <div class="ship-stats">
+      <div class="ship-stat ship-stat-inbound">
+        <div class="ship-stat-num">{inbound}</div>
+        <div class="ship-stat-label">Inbound to India</div>
+      </div>
+      <div class="ship-stat ship-stat-port">
+        <div class="ship-stat-num">{in_port}</div>
+        <div class="ship-stat-label">At Indian Ports</div>
+      </div>
+      <div class="ship-stat ship-stat-outbound">
+        <div class="ship-stat-num">{outbound}</div>
+        <div class="ship-stat-label">Outbound (ballast)</div>
+      </div>
+    </div>
+    <div class="ship-cargo-row">
+      <span class="ship-badge ship-crude">CRUDE &nbsp;{crude}</span>
+      <span class="ship-badge ship-lng">LNG &nbsp;{lng}</span>
+      <span class="ship-badge ship-cng">CNG &nbsp;{cng}</span>
+      <span class="ship-badge ship-petro">PETROLEUM &nbsp;{petro}</span>
+      <span class="ship-busiest">Busiest port: <strong>{busiest}</strong></span>
+    </div>
+    <div class="ship-ports">
+      <table class="ship-table">
+        <thead><tr><th>Port</th><th>Vessels</th></tr></thead>
+        <tbody>{port_rows}</tbody>
+      </table>
+    </div>
+  </section>"""
+
+
+def build_html(data: dict, generated_at: str, history: list, ships: dict | None = None) -> str:
     crude  = data.get("crude",  {})
     fx     = data.get("fx",     {})
     result = data.get("result", {})
@@ -63,6 +133,9 @@ def build_html(data: dict, generated_at: str, history: list) -> str:
     crude_error_html  = f'<div class="card-error">{crude_error}</div>'  if crude_error  else ""
     fx_error_html     = f'<div class="card-error">{fx_error}</div>'     if fx_error     else ""
     result_error_html = f'<div class="card-error">{result_error}</div>' if result_error else ""
+
+    # Ship tracker section
+    ship_section = build_ship_section(ships or {})
 
     # Chart section — show placeholder if fewer than 2 data points
     history_json = json.dumps(history)
@@ -230,6 +303,38 @@ def build_html(data: dict, generated_at: str, history: list) -> str:
     .chart-empty {{ text-align: center; padding: 40px 24px; }}
     .chart-empty-msg {{ color: var(--text-muted); font-size: 0.88rem; margin-top: 12px; }}
     @media (max-width: 600px) {{ header {{ padding: 14px 16px; }} main {{ padding: 0 14px 32px; margin-top: 24px; }} .card-value {{ font-size: 1.6rem; }} .result-value {{ font-size: 2rem; }} .chart-wrap {{ height: 240px; }} }}
+    /* Ship tracker section */
+    .ship-section {{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 24px 20px; box-shadow: var(--shadow); margin-bottom: 32px; }}
+    .ship-offline {{ border-color: #ef444433; background: #ef444408; }}
+    .ship-header {{ display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }}
+    .ship-icon {{ font-size: 1.4rem; }}
+    .ship-title {{ font-size: 1rem; font-weight: 700; color: var(--text); }}
+    .ship-sub {{ font-size: 0.78rem; font-weight: 400; color: var(--text-muted); margin-left: 6px; }}
+    .ship-asof {{ font-size: 0.74rem; color: var(--text-muted); margin-left: auto; }}
+    .ship-stale-badge {{ font-size: 0.68rem; background: #f59e0b22; color: var(--accent); border: 1px solid #f59e0b44; border-radius: 10px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }}
+    .ship-offline-msg {{ font-size: 0.82rem; color: var(--text-muted); }}
+    .ship-stats {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }}
+    .ship-stat {{ background: var(--surface2); border-radius: 10px; padding: 14px 18px; text-align: center; border: 1px solid var(--border); }}
+    .ship-stat-inbound {{ border-color: #10b98144; }}
+    .ship-stat-port    {{ border-color: #3b82f644; }}
+    .ship-stat-outbound{{ border-color: #f59e0b44; }}
+    .ship-stat-num {{ font-size: 2rem; font-weight: 800; letter-spacing: -.5px; }}
+    .ship-stat-inbound .ship-stat-num {{ color: #10b981; }}
+    .ship-stat-port    .ship-stat-num {{ color: #3b82f6; }}
+    .ship-stat-outbound .ship-stat-num {{ color: #f59e0b; }}
+    .ship-stat-label {{ font-size: 0.74rem; color: var(--text-muted); margin-top: 4px; }}
+    .ship-cargo-row {{ display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }}
+    .ship-badge {{ font-size: 0.75rem; font-weight: 600; border-radius: 10px; padding: 4px 10px; }}
+    .ship-crude {{ background: #f59e0b22; color: #fbbf24; border: 1px solid #f59e0b44; }}
+    .ship-lng   {{ background: #3b82f622; color: #60a5fa; border: 1px solid #3b82f644; }}
+    .ship-cng   {{ background: #10b98122; color: #34d399; border: 1px solid #10b98144; }}
+    .ship-petro {{ background: #f9731622; color: #fb923c; border: 1px solid #f9731644; }}
+    .ship-busiest {{ font-size: 0.78rem; color: var(--text-muted); margin-left: auto; }}
+    .ship-table {{ width: 100%; border-collapse: collapse; font-size: 0.8rem; }}
+    .ship-table th {{ text-align: left; color: var(--text-muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--border); }}
+    .ship-table td {{ padding: 5px 8px; border-bottom: 1px solid #2e335233; }}
+    .ship-td-num {{ text-align: right; font-weight: 600; color: var(--text); }}
+    @media (max-width: 600px) {{ .ship-stats {{ grid-template-columns: repeat(3,1fr); gap: 8px; }} .ship-stat-num {{ font-size: 1.4rem; }} }}
   </style>
 </head>
 <body>
@@ -297,6 +402,8 @@ def build_html(data: dict, generated_at: str, history: list) -> str:
       <span>Sources: <a href="https://ppac.gov.in" target="_blank" rel="noopener">PPAC</a> &amp; <a href="https://rbi.org.in" target="_blank" rel="noopener">RBI</a></span>
     </div>
 
+    {ship_section}
+
     {chart_section}
 
   </main>
@@ -312,6 +419,10 @@ def build_html(data: dict, generated_at: str, history: list) -> str:
 def main():
     print("Fetching live data...")
     data = get_all_data()
+
+    print("Fetching ship tracker data...")
+    ships = get_ship_data()
+    print("Ship data:", json.dumps({k: v for k, v in ships.items() if k != "port_activity"}, indent=2))
 
     crude_usd          = data.get("crude",  {}).get("price_usd")
     fx_rate            = data.get("fx",     {}).get("rate")
@@ -348,7 +459,7 @@ def main():
         print("Skipping history append — upstream data incomplete")
 
     os.makedirs("docs", exist_ok=True)
-    html = build_html(data, generated_at, history)
+    html = build_html(data, generated_at, history, ships)
     with open("docs/index.html", "w", encoding="utf-8") as f:
         f.write(html)
 

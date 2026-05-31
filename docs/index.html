@@ -49,6 +49,38 @@
     .chart-empty { text-align: center; padding: 40px 24px; }
     .chart-empty-msg { color: var(--text-muted); font-size: 0.88rem; margin-top: 12px; }
     @media (max-width: 600px) { header { padding: 14px 16px; } main { padding: 0 14px 32px; margin-top: 24px; } .card-value { font-size: 1.6rem; } .result-value { font-size: 2rem; } .chart-wrap { height: 240px; } }
+    /* Ship tracker section */
+    .ship-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 24px 20px; box-shadow: var(--shadow); margin-bottom: 32px; }
+    .ship-offline { border-color: #ef444433; background: #ef444408; }
+    .ship-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+    .ship-icon { font-size: 1.4rem; }
+    .ship-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .ship-sub { font-size: 0.78rem; font-weight: 400; color: var(--text-muted); margin-left: 6px; }
+    .ship-asof { font-size: 0.74rem; color: var(--text-muted); margin-left: auto; }
+    .ship-stale-badge { font-size: 0.68rem; background: #f59e0b22; color: var(--accent); border: 1px solid #f59e0b44; border-radius: 10px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+    .ship-offline-msg { font-size: 0.82rem; color: var(--text-muted); }
+    .ship-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+    .ship-stat { background: var(--surface2); border-radius: 10px; padding: 14px 18px; text-align: center; border: 1px solid var(--border); }
+    .ship-stat-inbound { border-color: #10b98144; }
+    .ship-stat-port    { border-color: #3b82f644; }
+    .ship-stat-outbound{ border-color: #f59e0b44; }
+    .ship-stat-num { font-size: 2rem; font-weight: 800; letter-spacing: -.5px; }
+    .ship-stat-inbound .ship-stat-num { color: #10b981; }
+    .ship-stat-port    .ship-stat-num { color: #3b82f6; }
+    .ship-stat-outbound .ship-stat-num { color: #f59e0b; }
+    .ship-stat-label { font-size: 0.74rem; color: var(--text-muted); margin-top: 4px; }
+    .ship-cargo-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .ship-badge { font-size: 0.75rem; font-weight: 600; border-radius: 10px; padding: 4px 10px; }
+    .ship-crude { background: #f59e0b22; color: #fbbf24; border: 1px solid #f59e0b44; }
+    .ship-lng   { background: #3b82f622; color: #60a5fa; border: 1px solid #3b82f644; }
+    .ship-cng   { background: #10b98122; color: #34d399; border: 1px solid #10b98144; }
+    .ship-petro { background: #f9731622; color: #fb923c; border: 1px solid #f9731644; }
+    .ship-busiest { font-size: 0.78rem; color: var(--text-muted); margin-left: auto; }
+    .ship-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .ship-table th { text-align: left; color: var(--text-muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+    .ship-table td { padding: 5px 8px; border-bottom: 1px solid #2e335233; }
+    .ship-td-num { text-align: right; font-weight: 600; color: var(--text); }
+    @media (max-width: 600px) { .ship-stats { grid-template-columns: repeat(3,1fr); gap: 8px; } .ship-stat-num { font-size: 1.4rem; } }
   </style>
 </head>
 <body>
@@ -63,7 +95,7 @@
       </div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <a style="font-size:0.78rem;color:#3b82f6;background:#22263a;border:1px solid #2e3352;border-radius:20px;padding:5px 12px;text-decoration:none;" href="fuel.html">⛽ Fuel Retail Prices</a>
-        <div class="update-badge">Updated: 31 May 2026, 02:05 PM IST</div>
+        <div class="update-badge">Updated: 31 May 2026, 05:04 PM IST</div>
       </div>
     </div>
   </header>
@@ -89,7 +121,7 @@
           <div><div class="card-label">USD / INR Rate</div><div class="card-sub">INR per 1 US Dollar</div></div>
         </div>
         <div class="card-value">₹95.3845 / $1</div>
-        <div class="card-detail">As of: 05/31/2026</div>
+        <div class="card-detail"></div>
         <div class="card-source">Source: <a href="https://www.rbi.org.in/" target="_blank" rel="noopener">RBI / FBIL</a></div>
         
       </div>
@@ -109,12 +141,49 @@
     </div>
 
     <div class="info-bar">
-      <span>Data fetched: 31 May 2026, 02:05 PM IST</span>
+      <span>Data fetched: 31 May 2026, 05:04 PM IST</span>
       <span class="sep">·</span>
       <span>Auto-updates every 6 hours via GitHub Actions</span>
       <span class="sep">·</span>
       <span>Sources: <a href="https://ppac.gov.in" target="_blank" rel="noopener">PPAC</a> &amp; <a href="https://rbi.org.in" target="_blank" rel="noopener">RBI</a></span>
     </div>
+
+    
+  <section class="ship-section">
+    <div class="ship-header">
+      <span class="ship-icon">&#128674;</span>
+      <h2 class="ship-title">Crude Tanker Pipeline <span class="ship-sub">live vessel tracking</span></h2>
+      <span class="ship-asof">as of 31 May 2026, 05:01 PM IST</span>
+    </div>
+    <div class="ship-stats">
+      <div class="ship-stat ship-stat-inbound">
+        <div class="ship-stat-num">0</div>
+        <div class="ship-stat-label">Inbound to India</div>
+      </div>
+      <div class="ship-stat ship-stat-port">
+        <div class="ship-stat-num">5</div>
+        <div class="ship-stat-label">At Indian Ports</div>
+      </div>
+      <div class="ship-stat ship-stat-outbound">
+        <div class="ship-stat-num">0</div>
+        <div class="ship-stat-label">Outbound (ballast)</div>
+      </div>
+    </div>
+    <div class="ship-cargo-row">
+      <span class="ship-badge ship-crude">CRUDE &nbsp;2</span>
+      <span class="ship-badge ship-lng">LNG &nbsp;1</span>
+      <span class="ship-badge ship-cng">CNG &nbsp;0</span>
+      <span class="ship-badge ship-petro">PETROLEUM &nbsp;2</span>
+      <span class="ship-busiest">Busiest port: <strong>Mundra</strong></span>
+    </div>
+    <div class="ship-ports">
+      <table class="ship-table">
+        <thead><tr><th>Port</th><th>Vessels</th></tr></thead>
+        <tbody><tr><td>Mundra</td><td class="ship-td-num">5</td></tr>
+</tbody>
+      </table>
+    </div>
+  </section>
 
     
   <section class="chart-section">
@@ -130,7 +199,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <script>
-    const HISTORY = [{"ts_utc": "2026-05-29T18:20:45Z", "ts_ist": "29 May, 11:50 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-29T18:20:58Z", "ts_ist": "29 May, 11:50 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-29T18:50:50Z", "ts_ist": "30 May, 12:20 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-29T20:09:41Z", "ts_ist": "30 May, 01:39 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-30T02:11:49Z", "ts_ist": "30 May, 07:41 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-30T08:17:45Z", "ts_ist": "30 May, 01:47 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-30T13:06:04Z", "ts_ist": "30 May, 06:36 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T02:37:28Z", "ts_ist": "31 May, 08:07 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T08:35:20Z", "ts_ist": "31 May, 02:05 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}];
+    const HISTORY = [{"ts_utc": "2026-05-29T18:20:45Z", "ts_ist": "29 May, 11:50 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-29T18:20:58Z", "ts_ist": "29 May, 11:50 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-29T18:50:50Z", "ts_ist": "30 May, 12:20 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-29T20:09:41Z", "ts_ist": "30 May, 01:39 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-30T02:11:49Z", "ts_ist": "30 May, 07:41 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-30T08:17:45Z", "ts_ist": "30 May, 01:47 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-30T13:06:04Z", "ts_ist": "30 May, 06:36 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T02:37:28Z", "ts_ist": "31 May, 08:07 AM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T08:35:20Z", "ts_ist": "31 May, 02:05 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}, {"ts_utc": "2026-05-31T11:34:31Z", "ts_ist": "31 May, 05:04 PM", "crude_usd": 106.83, "fx_rate": 95.3845, "price_inr": 10189.93, "price_inr_per_litre": 64.0929}];
     const labels      = HISTORY.map(d => d.ts_ist);
     const barrelData  = HISTORY.map(d => d.price_inr);
     const litreData   = HISTORY.map(d => d.price_inr_per_litre);
