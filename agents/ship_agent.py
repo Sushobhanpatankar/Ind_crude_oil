@@ -1,30 +1,23 @@
 """
-Ship Tracker Agent — reads latest snapshot from the maritime ship-tracking
-SQLite database (../ship/ship_tracking.db) and returns vessel counts by
-cargo category and port for embedding in the crude oil dashboard.
+Ship Tracker Agent — fetches the latest snapshot from the ship dashboard's
+publicly published ships_data.json (GitHub Pages) and returns vessel counts
+for embedding in the crude oil dashboard.
 
-Falls back gracefully when the database is unavailable (CI / GitHub Actions).
+Works in GitHub Actions with no local DB required.
 """
 
 import json
-import os
-import sqlite3
+import urllib.request
+import urllib.error
 from datetime import datetime, timedelta, timezone
 
-# Configurable path — override via env var SHIP_DB_PATH
-_DEFAULT_DB = os.path.join(os.path.dirname(__file__), "..", "..", "ship", "ship_tracking.db")
-SHIP_DB_PATH = os.environ.get("SHIP_DB_PATH", _DEFAULT_DB)
-
-# Consider data stale if the aggregated_stats row is older than this
-STALE_HOURS = 12
+SHIPS_JSON_URL = "https://sushobhanpatankar.github.io/ship/ships_data.json"
+STALE_HOURS = 2   # treat data as stale if older than this
 
 
-def _is_fresh(ts_str: str) -> bool:
-    """Return True if the timestamp string (ISO-8601) is within STALE_HOURS."""
+def _is_fresh(ts_utc: str) -> bool:
     try:
-        ts = datetime.fromisoformat(ts_str)
-        if ts.tzinfo is None:
-            ts = ts.replace(tzinfo=timezone.utc)
+        ts = datetime.fromisoformat(ts_utc.replace("Z", "+00:00"))
         return datetime.now(timezone.utc) - ts < timedelta(hours=STALE_HOURS)
     except Exception:
         return False
@@ -37,97 +30,67 @@ def get_ship_data() -> dict:
         "available": True/False,
         "stale": True/False,
         "as_of": "30 May 2026, 10:30 AM IST",
-        "inbound_count": 12,
-        "outbound_count": 5,
-        "in_port_count": 8,
+        "berthed_count": 5,
+        "anchored_count": 3,
+        "in_port_count": 12,
         "crude_count": 7,
         "lng_count": 2,
         "cng_count": 1,
         "petroleum_count": 5,
-        "busiest_port": "Vadinar",
-        "port_activity": [{"port": "Mundra", "count": 3}, ...]
+        "busiest_port": "Mundra",
+        "port_activity": [{"port": "Mundra", "count": 6}, ...]
       }
     On failure returns {"available": False, "reason": "..."}.
     """
-    db_path = os.path.abspath(SHIP_DB_PATH)
-    if not os.path.exists(db_path):
-        return {"available": False, "reason": "database not found"}
-
     try:
-        con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=5)
-        con.row_factory = sqlite3.Row
-        cur = con.cursor()
-
-        # --- Latest aggregated stats row ---
-        cur.execute(
-            "SELECT * FROM aggregated_stats ORDER BY computed_at DESC LIMIT 1"
+        req = urllib.request.Request(
+            SHIPS_JSON_URL,
+            headers={"User-Agent": "crude-dashboard/1.0"},
         )
-        row = cur.fetchone()
-        if not row:
-            con.close()
-            return {"available": False, "reason": "no aggregated stats yet"}
-
-        ts_str = row["computed_at"]
-        stale = not _is_fresh(ts_str)
-
-        # Pretty-format timestamp to IST
-        try:
-            ts_dt = datetime.fromisoformat(ts_str)
-            if ts_dt.tzinfo is None:
-                ts_dt = ts_dt.replace(tzinfo=timezone.utc)
-            ist = ts_dt + timedelta(hours=5, minutes=30)
-            as_of = ist.strftime("%d %b %Y, %I:%M %p IST")
-        except Exception:
-            as_of = ts_str
-
-        # Parse extra detail from stats_json if available
-        extra = {}
-        try:
-            extra = json.loads(row["stats_json"] or "{}")
-        except Exception:
-            pass
-
-        result = {
-            "available": True,
-            "stale": stale,
-            "as_of": as_of,
-            "in_port_count":   row["total_in_port"],
-            "crude_count":     row["crude_count"],
-            "lng_count":       row["lng_count"],
-            "cng_count":       row["cng_count"],
-            "petroleum_count": row["petroleum_count"],
-            "busiest_port":    row["busiest_port"] or "—",
-        }
-
-        # --- Berthed vs anchored counts from port_activity ---
-        cur.execute(
-            """SELECT activity, COUNT(*) AS cnt
-               FROM port_activity
-               GROUP BY activity"""
-        )
-        activity_rows = {r["activity"]: r["cnt"] for r in cur.fetchall()}
-        result["berthed_count"] = activity_rows.get("BERTHED", 0)
-        result["anchored_count"] = activity_rows.get("ANCHORED", 0)
-
-        # --- Port activity breakdown ---
-        cur.execute(
-            """SELECT port_name, COUNT(*) AS cnt
-               FROM port_activity
-               GROUP BY port_name
-               ORDER BY cnt DESC
-               LIMIT 10"""
-        )
-        result["port_activity"] = [
-            {"port": r["port_name"], "count": r["cnt"]} for r in cur.fetchall()
-        ]
-
-        con.close()
-        return result
-
-    except sqlite3.OperationalError as e:
-        return {"available": False, "reason": f"sqlite error: {e}"}
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+    except urllib.error.URLError as e:
+        return {"available": False, "reason": f"fetch error: {e}"}
     except Exception as e:
         return {"available": False, "reason": f"unexpected error: {e}"}
+
+    history = data.get("history", [])
+    if not history:
+        return {"available": False, "reason": "no history in snapshot"}
+
+    latest = history[-1]
+    ts_utc = latest.get("ts_utc", "")
+    stale = not _is_fresh(ts_utc)
+
+    # Pretty-format timestamp to IST
+    try:
+        ts_dt = datetime.fromisoformat(ts_utc.replace("Z", "+00:00"))
+        ist = ts_dt + timedelta(hours=5, minutes=30)
+        as_of = ist.strftime("%d %b %Y, %I:%M %p IST")
+    except Exception:
+        as_of = ts_utc
+
+    port_activity = [
+        {"port": port, "count": count}
+        for port, count in sorted(
+            latest.get("ports", {}).items(), key=lambda x: -x[1]
+        )
+    ]
+
+    return {
+        "available":       True,
+        "stale":           stale,
+        "as_of":           as_of,
+        "berthed_count":   latest.get("berthed", 0),
+        "anchored_count":  latest.get("anchored", 0),
+        "in_port_count":   latest.get("total_in_port", 0),
+        "crude_count":     latest.get("crude", 0),
+        "lng_count":       latest.get("lng", 0),
+        "cng_count":       latest.get("cng", 0),
+        "petroleum_count": latest.get("petroleum", 0),
+        "busiest_port":    latest.get("busiest_port") or "—",
+        "port_activity":   port_activity,
+    }
 
 
 if __name__ == "__main__":
