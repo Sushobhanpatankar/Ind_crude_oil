@@ -1,7 +1,8 @@
 """
 Agent 2 — USD to INR Exchange Rate
 Primary source: RBI homepage FBIL reference rate widget (rbi.org.in)
-Fallback: RBI Reference Rate Archive page
+Fallback 1: RBI Reference Rate Archive page
+Fallback 2: open.er-api.com free public API (no auth required)
 """
 
 import re
@@ -9,11 +10,15 @@ import requests
 
 RBI_HOME_URL = "https://www.rbi.org.in/"
 RBI_ARCHIVE_URL = "https://www.rbi.org.in/Scripts/ReferenceRateArchive.aspx"
+PUBLIC_API_URL = "https://open.er-api.com/v6/latest/USD"
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xhtml+xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-IN,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
 }
 
 # Sanity bounds for USD/INR rate
@@ -149,6 +154,26 @@ def _fetch_from_archive() -> tuple:
     return None, None
 
 
+def _fetch_from_public_api() -> tuple:
+    """
+    Tertiary fallback: fetch USD/INR from open.er-api.com (free, no auth).
+    Returns (rate: float, as_of: str) or (None, None).
+    """
+    try:
+        resp = requests.get(PUBLIC_API_URL, timeout=(10, 15))
+        resp.raise_for_status()
+        data = resp.json()
+        if data.get("result") == "success":
+            rate = data.get("rates", {}).get("INR")
+            if rate is not None:
+                rate = float(rate)
+                if RATE_MIN <= rate <= RATE_MAX:
+                    return rate, ""
+    except Exception:
+        pass
+    return None, None
+
+
 def get_usd_inr_rate() -> dict:
     """
     Fetch the latest USD/INR reference rate from RBI (FBIL source).
@@ -180,9 +205,19 @@ def get_usd_inr_rate() -> dict:
                 "url": RBI_ARCHIVE_URL,
             }
 
+        # Archive also failed — try public API
+        rate, as_of = _fetch_from_public_api()
+        if rate is not None:
+            return {
+                "rate": rate,
+                "as_of": as_of,
+                "source": "Open Exchange Rates (public API)",
+                "url": PUBLIC_API_URL,
+            }
+
         return {
             "rate": None,
-            "error": "Could not parse USD/INR rate from RBI homepage or archive",
+            "error": "Could not parse USD/INR rate from RBI homepage, archive, or public API",
             "source": "RBI",
             "url": RBI_HOME_URL,
         }
@@ -197,6 +232,19 @@ def get_usd_inr_rate() -> dict:
                     "as_of": as_of,
                     "source": "RBI Reference Rate Archive",
                     "url": RBI_ARCHIVE_URL,
+                }
+        except Exception:
+            pass
+
+        # Archive also failed — try public API
+        try:
+            rate, as_of = _fetch_from_public_api()
+            if rate is not None:
+                return {
+                    "rate": rate,
+                    "as_of": as_of,
+                    "source": "Open Exchange Rates (public API)",
+                    "url": PUBLIC_API_URL,
                 }
         except Exception:
             pass
