@@ -96,7 +96,7 @@
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <a style="font-size:0.78rem;color:#3b82f6;background:#22263a;border:1px solid #2e3352;border-radius:20px;padding:5px 12px;text-decoration:none;" href="fuel.html">⛽ Fuel Retail Prices</a>
         <a style="font-size:0.78rem;color:#8892a4;background:#22263a;border:1px solid #2e3352;border-radius:20px;padding:5px 12px;text-decoration:none;" href="https://sushobhanpatankar.github.io/ship/" target="_blank" rel="noopener">🚢 Ship Tracker</a>
-        <div class="update-badge">Updated: 15 Jun 2026, 12:41 AM IST</div>
+        <div class="update-badge">Updated: 15 Jun 2026, 08:20 AM IST</div>
       </div>
     </div>
   </header>
@@ -109,11 +109,11 @@
           <span class="card-icon">🛢️</span>
           <div><div class="card-label">Indian Crude Basket</div><div class="card-sub">USD per barrel</div></div>
         </div>
-        <div class="card-value">$113.49</div>
-        <div class="card-detail">March 2026 avg.</div>
-        <div class="today-tag">Today's spot: <strong>$124.85</strong></div>
-        <div class="card-source">Source: <a href="https://ppac.gov.in/prices/international-prices-of-crude-oil" target="_blank" rel="noopener">PPAC (MoPNG)</a></div>
+        <div class="card-value">Unavailable</div>
+        <div class="card-detail"></div>
         
+        <div class="card-source">Source: <a href="https://ppac.gov.in/prices/international-prices-of-crude-oil" target="_blank" rel="noopener">PPAC (MoPNG)</a></div>
+        <div class="card-error">PPAC request failed: HTTPSConnectionPool(host='ppac.gov.in', port=443): Max retries exceeded with url: /prices/international-prices-of-crude-oil (Caused by ConnectTimeoutError(<HTTPSConnection(host='ppac.gov.in', port=443) at 0x7f168bbc2750>, 'Connection to ppac.gov.in timed out. (connect timeout=10)'))</div>
       </div>
 
       <div class="card">
@@ -121,7 +121,7 @@
           <span class="card-icon">💱</span>
           <div><div class="card-label">USD / INR Rate</div><div class="card-sub">INR per 1 US Dollar</div></div>
         </div>
-        <div class="card-value">₹95.2997 / $1</div>
+        <div class="card-value">₹95.1765 / $1</div>
         <div class="card-detail"></div>
         <div class="card-source">Source: <a href="https://www.rbi.org.in/" target="_blank" rel="noopener">RBI / FBIL</a></div>
         
@@ -132,17 +132,17 @@
           <span class="card-icon">🇮🇳</span>
           <div><div class="card-label">Cost in INR</div><div class="card-sub">At Indian shores</div></div>
         </div>
-        <div class="card-value result-value">₹10,815.56 / bbl</div>
-        <div class="litre-line">Per litre: <strong>₹68.03 / L</strong></div>
-        <div class="formula">113.49 USD/bbl × 95.2997 INR/USD = ₹10,815.56/bbl</div>
-        <div class="formula">10,815.56 INR / 158.987 L = INR 68.0280/L</div>
-        
+        <div class="card-value result-value">Unavailable / bbl</div>
+        <div class="litre-line">Per litre: <strong>Unavailable / L</strong></div>
+        <div class="formula"></div>
+        <div class="formula"></div>
+        <div class="card-error">Missing upstream data: crude price (USD/barrel)</div>
       </div>
 
     </div>
 
     <div class="info-bar">
-      <span>Data fetched: 15 Jun 2026, 12:41 AM IST</span>
+      <span>Data fetched: 15 Jun 2026, 08:20 AM IST</span>
       <span class="sep">·</span>
       <span>Auto-updates every 6 hours via GitHub Actions</span>
       <span class="sep">·</span>
@@ -153,34 +153,35 @@
   <section class="ship-section">
     <div class="ship-header">
       <span class="ship-icon">&#128674;</span>
-      <h2 class="ship-title">Crude Tanker Pipeline <span class="ship-sub">live vessel tracking</span></h2>
-      <span class="ship-asof">as of 14 Jun 2026, 11:27 PM IST</span>
+      <h2 class="ship-title">Crude Tanker Pipeline <span class="ship-sub">live vessel tracking</span> <span class="ship-stale-badge">stale</span></h2>
+      <span class="ship-asof">as of 15 Jun 2026, 05:16 AM IST</span>
     </div>
     <div class="ship-stats">
       <div class="ship-stat ship-stat-inbound">
-        <div class="ship-stat-num">0</div>
+        <div class="ship-stat-num">2</div>
         <div class="ship-stat-label">Berthed</div>
       </div>
       <div class="ship-stat ship-stat-port">
-        <div class="ship-stat-num">0</div>
+        <div class="ship-stat-num">5</div>
         <div class="ship-stat-label">At Indian Ports</div>
       </div>
       <div class="ship-stat ship-stat-outbound">
-        <div class="ship-stat-num">0</div>
+        <div class="ship-stat-num">3</div>
         <div class="ship-stat-label">Anchored</div>
       </div>
     </div>
     <div class="ship-cargo-row">
-      <span class="ship-badge ship-crude">CRUDE &nbsp;0</span>
-      <span class="ship-badge ship-lng">LNG &nbsp;0</span>
+      <span class="ship-badge ship-crude">CRUDE &nbsp;2</span>
+      <span class="ship-badge ship-lng">LNG &nbsp;1</span>
       <span class="ship-badge ship-cng">CNG &nbsp;0</span>
-      <span class="ship-badge ship-petro">PETROLEUM &nbsp;0</span>
-      <span class="ship-busiest">Busiest port: <strong>—</strong></span>
+      <span class="ship-badge ship-petro">PETROLEUM &nbsp;2</span>
+      <span class="ship-busiest">Busiest port: <strong>Mundra</strong></span>
     </div>
     <div class="ship-ports">
       <table class="ship-table">
         <thead><tr><th>Port</th><th>Vessels</th></tr></thead>
-        <tbody><tr><td colspan="2" style="color:var(--text-muted)">No port data yet</td></tr></tbody>
+        <tbody><tr><td>Mundra</td><td class="ship-td-num">5</td></tr>
+</tbody>
       </table>
     </div>
   </section>
