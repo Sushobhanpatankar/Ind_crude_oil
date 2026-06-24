@@ -847,6 +847,14 @@
       "fx_rate": 94.813731,
       "price_inr": 8275.34,
       "price_inr_per_litre": 52.0504
+    },
+    {
+      "ts_utc": "2026-06-24T19:27:05Z",
+      "ts_ist": "25 Jun, 12:57 AM",
+      "crude_usd": 87.28,
+      "fx_rate": 94.813731,
+      "price_inr": 8275.34,
+      "price_inr_per_litre": 52.0504
     }
   ]
 }
