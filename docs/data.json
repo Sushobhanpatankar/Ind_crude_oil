@@ -1,14 +1,6 @@
 {
   "history": [
     {
-      "ts_utc": "2026-06-17T10:27:32Z",
-      "ts_ist": "17 Jun, 03:57 PM",
-      "crude_usd": 113.49,
-      "fx_rate": 94.617681,
-      "price_inr": 10738.16,
-      "price_inr_per_litre": 67.5411
-    },
-    {
       "ts_utc": "2026-06-17T14:53:23Z",
       "ts_ist": "17 Jun, 08:23 PM",
       "crude_usd": 113.49,
@@ -955,6 +947,14 @@
     {
       "ts_utc": "2026-07-17T07:53:16Z",
       "ts_ist": "17 Jul, 01:23 PM",
+      "crude_usd": 74.11,
+      "fx_rate": 96.403741,
+      "price_inr": 7144.48,
+      "price_inr_per_litre": 44.9375
+    },
+    {
+      "ts_utc": "2026-07-17T13:06:49Z",
+      "ts_ist": "17 Jul, 06:36 PM",
       "crude_usd": 74.11,
       "fx_rate": 96.403741,
       "price_inr": 7144.48,
