@@ -1167,6 +1167,22 @@
         "petrol": 107.77,
         "diesel": 99.55
       }
+    },
+    {
+      "ts_utc": "2026-08-11T03:19:19Z",
+      "ts_ist": "11 Aug",
+      "Delhi": {
+        "petrol": 102.12,
+        "diesel": 95.2
+      },
+      "Mumbai": {
+        "petrol": 111.21,
+        "diesel": 97.83
+      },
+      "Chennai": {
+        "petrol": 107.77,
+        "diesel": 99.55
+      }
     }
   ]
 }
