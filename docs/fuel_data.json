@@ -1,22 +1,6 @@
 {
   "history": [
     {
-      "ts_utc": "2026-08-25T02:39:23Z",
-      "ts_ist": "25 Aug",
-      "Delhi": {
-        "petrol": 102.12,
-        "diesel": 95.2
-      },
-      "Mumbai": {
-        "petrol": 111.21,
-        "diesel": 97.83
-      },
-      "Chennai": {
-        "petrol": 107.77,
-        "diesel": 99.55
-      }
-    },
-    {
       "ts_utc": "2026-08-27T11:49:51Z",
       "ts_ist": "27 Aug",
       "Delhi": {
@@ -1427,6 +1411,22 @@
     {
       "ts_utc": "2026-11-23T09:32:04Z",
       "ts_ist": "23 Nov",
+      "Delhi": {
+        "petrol": 102.12,
+        "diesel": 95.2
+      },
+      "Mumbai": {
+        "petrol": 111.21,
+        "diesel": 97.83
+      },
+      "Chennai": {
+        "petrol": 107.77,
+        "diesel": 99.55
+      }
+    },
+    {
+      "ts_utc": "2026-11-24T11:26:44Z",
+      "ts_ist": "24 Nov",
       "Delhi": {
         "petrol": 102.12,
         "diesel": 95.2
